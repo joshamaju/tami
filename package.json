@@ -57,7 +57,6 @@
     "get-port": "^7.1.0",
     "htmx.org": "^1.9.12",
     "lucide-svelte": "^0.460.1",
-    "method-override": "^3.0.0",
     "morgan": "^1.10.0",
     "open": "^10.1.0",
     "prettier": "^3.3.3",

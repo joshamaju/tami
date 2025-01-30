@@ -1,7 +1,6 @@
 import bodyParser from "body-parser";
 import compression from "compression";
 import express, { type ErrorRequestHandler } from "express";
-import methodOverride from "method-override";
 import session from "express-session";
 
 import logger from "morgan";
@@ -43,7 +42,6 @@ app.use(
 );
 
 app.use(compression());
-app.use(methodOverride());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -63,14 +61,6 @@ app.get("/", async (req, res) => {
   session ??= manager.peek() ?? manager.newSession();
 
   const res_ = session.response;
-
-  // res.setHeader(
-  //   "Link",
-  //   manager.sessions
-  //     .filter((s) => s.slug !== slug)
-  //     .map((s) => `</?session=${s.slug}>; rel="prefetch"`)
-  //     .join(", ")
-  // );
 
   return res.render("home/home", {
     session,
@@ -138,22 +128,6 @@ app.post("/", async (req, res) => {
       }, E.toError);
     })
   );
-
-  // if (E.isRight(response) && is_image(response.right)) {
-  //   const res = response.right;
-
-  //   const blob = await response.right.clone().blob();
-  //   const data = Buffer.from(await blob.arrayBuffer()).toString("base64");
-
-  //   session.update(session.request, {
-  //     body: data,
-  //     status: res.status,
-  //     statusText: res.statusText,
-  //     headers: Object.fromEntries(res.headers),
-  //   });
-
-  //   await manager.update(session);
-  // }
 
   return res.render("home/home", {
     session,
