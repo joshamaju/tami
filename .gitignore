@@ -1,0 +1,17 @@
+.env
+.env*.
+!.env.example
+
+.facades
+node_modules
+
+test-results
+playwright-report
+
+package-lock.json
+
+.idea
+.DS_Store
+
+dist
+manager
