@@ -4,7 +4,6 @@ import webfontDownload from "vite-plugin-webfont-dl";
 
 export default defineConfig({
   integrations: [express()],
-  build: { minify: false },
   views: ["src/views/**/*.{entry,html}.svelte"],
   vite: {
     build: { target: "node16" },
