@@ -20,6 +20,8 @@ import { resolve } from "./utils/view";
 
 const manager = new SessionManager(new DiskStorage());
 
+console.log("📀 loading local history");
+
 await manager.load();
 
 const app = express();
@@ -47,7 +49,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(async (_, __, next) => {
-  if (manager.empty) manager.newSession();
+  if (manager.empty) await manager.newSession();
   next();
 });
 
@@ -58,19 +60,14 @@ app.get("/", async (req, res) => {
 
   if (slug && !session) return res.status(404).render("404");
 
-  session ??= manager.peek() ?? manager.newSession();
+  session ??= manager.peek() ?? (await manager.newSession());
 
-  const res_ = session.response;
+  const resp = session.response;
 
   return res.render("home/home", {
     session,
     sessions: manager.sessions,
-    response: res_
-      ? E.right({
-          ...res_,
-          formatted: res_ ? await format(res_) : null,
-        })
-      : null,
+    response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });
 });
 
@@ -79,7 +76,7 @@ app.post("/", async (req, res) => {
 
   let session = typeof slug === "string" ? manager.get(slug) : null;
 
-  session ??= manager.newSession();
+  session ??= await manager.newSession();
 
   const {
     url,
@@ -120,11 +117,9 @@ app.post("/", async (req, res) => {
   const fn = pipe(
     TE.fromEither(response),
     TE.chain(() => {
+      const res = session.response;
       return TE.tryCatch(async () => {
-        return {
-          ...session.response,
-          formatted: session.response ? await format(session.response) : null,
-        };
+        return { ...res, formatted: res ? await format(res) : null };
       }, E.toError);
     })
   );
@@ -156,7 +151,7 @@ app.post("/session/duplicate", async (req, res) => {
 });
 
 app.post("/session/new", async (_, res) => {
-  const session = manager.newSession();
+  const session = await manager.newSession();
   return res.redirect(`/?session=${session.slug}`);
 });
 
