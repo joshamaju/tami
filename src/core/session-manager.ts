@@ -20,11 +20,11 @@ export class SessionManager {
     return first;
   }
 
-  newSession() {
+  async newSession() {
     const slug = spaceSlug();
     const session = new Session({ slug });
     this._sessions.set(slug, session);
-    this.saveSession(session);
+    await this.saveSession(session);
     return session;
   }
 
