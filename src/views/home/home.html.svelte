@@ -11,15 +11,15 @@
   import KeyValue from "./key-value/key-value.entry.svelte";
   import Editor from "./editor/editor.entry.svelte";
   import Document from "../components/document.entry.svelte";
+  import Response from "./response.svelte";
+  import Prefetch from "./prefetch.svelte";
+  import Spinner from "../components/spinner.svelte";
+  import Loader from "../components/loader.svelte";
 
   import type { Result } from "./types";
   import { Method } from "../../types/method";
   import type { Session } from "../../core/session";
   import { ContentType as ContentTypes } from "../../types/content-type";
-  import Response from "./response.svelte";
-  import Prefetch from "./prefetch.svelte";
-  import Spinner from "../components/spinner.svelte";
-  import Loader from "../components/loader.svelte";
 
   export let session: Session;
   export let sessions: Array<Session>;
