@@ -82,20 +82,11 @@ export class Session {
     return response;
   }
 
-  async toJson(): Promise<ISession> {
-    // const res = this._response;
+  toJson(): ISession {
     return {
       slug: this.config.slug,
       request: this._request,
       response: this._response,
-      //   response: res
-      //     ? {
-      //         status: res.status,
-      //         body: await res.text(),
-      //         statusText: res.statusText,
-      //         headers: Object.fromEntries(res.headers),
-      //       }
-      //     : undefined,
     };
   }
 }
