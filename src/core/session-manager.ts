@@ -57,7 +57,7 @@ export class SessionManager {
   }
 
   async saveSession(session: Session) {
-    const data = await session.toJson();
+    const data = session.toJson();
     await this.storage.save(data);
   }
 
