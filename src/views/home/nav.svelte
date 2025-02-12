@@ -1,6 +1,6 @@
 <script lang="ts">
   import PlusIcon from "lucide-svelte/icons/plus";
-  import MenuIcon from "lucide-svelte/icons/menu";
+  // import MenuIcon from "lucide-svelte/icons/menu";
   import CopyIcon from "lucide-svelte/icons/copy";
   import TrashIcon from "lucide-svelte/icons/trash-2";
   //   import EllipsisIcon from "lucide-svelte/icons/ellipsis-vertical";
@@ -31,14 +31,16 @@
 <nav
   {...$$restProps}
   class="{[
-    'w-1/5 h-full border-r bg-gray-100 space-y-4 py-4 px-2 overflow-auto',
+    'w-1/5 h-full border-r bg-gray-100 space-y-2 p-2',
     $$restProps.class ?? '',
   ].join(' ')}"
 >
   <div class="flex justify-between px-4">
-    <button class="js-toggle-side-nav">
+    <!-- <button class="js-toggle-side-nav">
       <MenuIcon size="{20}" class="pointer-events-none" />
-    </button>
+    </button> -->
+
+    <div></div>
 
     <form action="/session/new" method="post">
       <button>
