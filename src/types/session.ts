@@ -1,9 +1,9 @@
 type KeyValue = [name: string, value: string];
 
 export type SessionRequest = {
-  url: string;
+  url?: string;
   body?: string;
-  method: string;
+  method?: string;
   query?: Array<KeyValue>;
   headers?: Record<string, string>;
 };

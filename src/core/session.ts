@@ -11,9 +11,10 @@ import { is_image } from "./utils";
 export class Session {
   constructor(
     private config: { slug: string },
-    private _request = {} as SessionRequest,
+    private _request?: SessionRequest,
     private _response?: SessionResponse
   ) {
+    this._request ??= {};
     this._request.headers ??= {};
     this._request.headers["Accept"] ??= "*/*";
   }
@@ -41,6 +42,10 @@ export class Session {
 
   async execute() {
     const { query, headers, method } = this._request!;
+
+    if (!this._request?.url) {
+      return E.left(new Error("Invalid url"));
+    }
 
     const url = new URL(this._request?.url);
     const search = new URLSearchParams(query);

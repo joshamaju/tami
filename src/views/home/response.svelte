@@ -4,6 +4,8 @@
 
   import * as E from "fp-ts/lib/Either";
 
+  import PlugZapIcon from "lucide-svelte/icons/plug-zap";
+
   import Editor from "./editor/editor.entry.svelte";
 
   import type { Result } from "./types";
@@ -135,8 +137,12 @@
 {/if}
 
 {#if response && E.isLeft(response)}
-  <div class="flex flex-col items-center justify-center px-4 py-20">
-    <p class="text-white bg-red-400 px-4 py-1 rounded-lg">
+  <div class="flex flex-col items-center justify-center px-4 py-20 gap-4">
+    <div class="p-4 rounded-full bg-slate-100">
+      <PlugZapIcon size="{100}" class="text-gray-300" />
+    </div>
+
+    <p class="bg-red-200 px-4 py-1 rounded-lg">
       {JSON.stringify(response.left.cause)}
     </p>
   </div>

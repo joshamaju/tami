@@ -3,7 +3,7 @@ import { Session } from "./session";
 import type { Storage } from "./storage/interface";
 
 export class SessionManager {
-  private _sessions = new Map<string, Session>();
+  private _sessions = new Map<string, { loaded: boolean; session: Session }>();
 
   constructor(private storage: Storage) {}
 
@@ -17,13 +17,13 @@ export class SessionManager {
 
   peek() {
     const [first] = [...this._sessions.values()];
-    return first;
+    return first?.session;
   }
 
   async newSession() {
     const slug = spaceSlug();
     const session = new Session({ slug });
-    this._sessions.set(slug, session);
+    this._sessions.set(slug, { loaded: true, session });
     await this.saveSession(session);
     return session;
   }
@@ -37,13 +37,29 @@ export class SessionManager {
       session.response
     );
 
-    this._sessions.set(slug, new_session);
+    const old_session = this._sessions.get(session.slug);
+
+    this._sessions.set(slug, {
+      session: new_session,
+      loaded: old_session?.loaded ?? false,
+    });
+
     await this.saveSession(session);
+
     return new_session;
   }
 
-  get(slug: string) {
-    return this._sessions.get(slug);
+  async get(slug: string) {
+    let item = this._sessions.get(slug);
+    let session = item?.session;
+
+    if (item && !item.loaded) {
+      const _ = await this.storage.loadOne(slug);
+      session = new Session({ slug }, _?.request, _?.response);
+      this._sessions.set(slug, { loaded: true, session });
+    }
+
+    return session;
   }
 
   remove(slug: string) {
@@ -52,7 +68,8 @@ export class SessionManager {
   }
 
   async update(session: Session) {
-    this._sessions.set(session.slug, session);
+    const old = this._sessions.get(session.slug);
+    this._sessions.set(session.slug, { loaded: old?.loaded ?? false, session });
     await this.saveSession(session);
   }
 
@@ -62,7 +79,9 @@ export class SessionManager {
   }
 
   async save() {
-    const sessions = [...this._sessions.values()].map((_) => _.toJson());
+    const sessions = [...this._sessions.values()].map((_) =>
+      _.session.toJson()
+    );
     return this.storage.save(...(await Promise.all(sessions)));
   }
 
@@ -70,7 +89,10 @@ export class SessionManager {
     const contents = await this.storage.load();
 
     contents.forEach(({ slug, ..._ }) => {
-      this._sessions.set(slug, new Session({ slug }, _.request, _.response));
+      this._sessions.set(slug, {
+        loaded: false,
+        session: new Session({ slug }, _.request),
+      });
     });
   }
 }

@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { Session } from "../../types/session";
-import type { Storage } from "./interface";
+import type { SessionPart, Storage } from "./interface";
 
 export class DiskStorage implements Storage {
   private root = fileURLToPath(
@@ -13,7 +13,24 @@ export class DiskStorage implements Storage {
     )
   );
 
-  remove(slug: string) {
+  private meta = join(this.root, "metadata.json");
+
+  private async getMeta(): Promise<SessionPart[]> {
+    try {
+      const meta = await fs.readJSON(this.meta);
+      return meta;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  private async saveMeta(data: Array<SessionPart>) {
+    await fs.writeJSON(this.meta, data);
+  }
+
+  async remove(slug: string) {
+    const meta = await this.getMeta();
+    await this.saveMeta(meta.filter((_) => _.slug == slug));
     return fs.remove(join(this.root, slug));
   }
 
@@ -22,26 +39,37 @@ export class DiskStorage implements Storage {
   }
 
   async save(...sessions: Array<Session>) {
-    await Promise.all(sessions.map((_) => this.saveOne(_)));
+    await Promise.all([
+      ...sessions.map((_) => this.saveOne(_)),
+      this.getMeta().then((_) => {
+        const meta = [
+          ..._,
+          ...sessions.map((_) => ({
+            slug: _.slug,
+            request: { url: _.request?.url, method: _.request?.method },
+          })),
+        ];
+
+        return this.saveMeta(
+          Object.values(
+            Object.fromEntries(meta.map((_) => [_.slug, _] as const))
+          )
+        );
+      }),
+    ]);
   }
 
-  async load() {
+  async loadOne(slug: Session["slug"]) {
+    try {
+      const data = await fs.readJSON(join(this.root, slug));
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async load(): Promise<Array<SessionPart>> {
     await fs.ensureDir(this.root);
-
-    const files = await fs.readdir(this.root);
-
-    const contents = await Promise.all(
-      files.map((file) => fs.readFile(join(this.root, file), "utf-8"))
-    );
-
-    return contents
-      .map((content) => {
-        try {
-          return JSON.parse(content);
-        } catch (error) {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    return this.getMeta();
   }
 }

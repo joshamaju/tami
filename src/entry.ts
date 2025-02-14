@@ -48,17 +48,21 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(async (_, __, next) => {
-  if (manager.empty) await manager.newSession();
-  next();
-});
+// app.use(async (_, __, next) => {
+//   if (manager.empty) await manager.newSession();
+//   next();
+// });
 
 app.get("/", async (req, res) => {
   const slug = req.query.session;
 
-  let session = typeof slug === "string" ? manager.get(slug) : null;
+  let session = typeof slug === "string" ? await manager.get(slug) : null;
 
-  if (slug && !session) return res.status(404).render("404");
+  // console.log(slug, session);
+
+  if (slug && !session) {
+    return res.status(404).render("404");
+  }
 
   session ??= manager.peek() ?? (await manager.newSession());
 
@@ -66,7 +70,8 @@ app.get("/", async (req, res) => {
 
   return res.render("home/home", {
     session,
-    sessions: manager.sessions,
+    sessions: [],
+    // sessions: manager.sessions.map((_) => _.session),
     response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });
 });
@@ -74,7 +79,7 @@ app.get("/", async (req, res) => {
 app.post("/", async (req, res) => {
   let slug = req.query.session;
 
-  let session = typeof slug === "string" ? manager.get(slug) : null;
+  let session = typeof slug === "string" ? await manager.get(slug) : null;
 
   session ??= await manager.newSession();
 
@@ -127,7 +132,7 @@ app.post("/", async (req, res) => {
   return res.render("home/home", {
     session,
     response: await fn(),
-    sessions: manager.sessions,
+    sessions: manager.sessions.map((_) => _.session),
   });
 });
 
@@ -140,7 +145,7 @@ app.post("/session/delete", async (req, res) => {
 app.post("/session/duplicate", async (req, res) => {
   const { slug } = req.body;
 
-  const session = manager.get(slug);
+  const session = await manager.get(slug);
 
   if (session) {
     const clone = await manager.clone(session);
