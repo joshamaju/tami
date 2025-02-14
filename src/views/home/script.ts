@@ -29,7 +29,7 @@ document.addEventListener("click", (e) => {
       panel?.removeAttribute("hidden");
     }
 
-    if (activeControls) {
+    if (target !== current && activeControls) {
       const panel = document.getElementById(activeControls);
       panel?.setAttribute("hidden", "");
     }
