@@ -316,7 +316,9 @@
   </div>
 
   <script>
-    document.body.classList.add("loaded");
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("loaded");
+    });
   </script>
 </Document>
 
@@ -330,11 +332,14 @@
     z-index: 1000;
     position: fixed;
     align-items: center;
+    transition: all 0.5s;
     justify-content: center;
     background-color: #000;
   }
 
   :global(body.loaded) .loader {
-    display: none;
+    /* display: none; */
+    opacity: 0;
+    visibility: hidden;
   }
 </style>
