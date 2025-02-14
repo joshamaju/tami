@@ -31,7 +31,6 @@
     "start": "node ./bin/start.js",
     "version": "changeset version",
     "test:integration": "playwright test",
-    "postinstall": "npx playwright install",
     "test": "npm run test:integration && npm run test:unit"
   },
   "keywords": [
