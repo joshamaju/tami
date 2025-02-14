@@ -12,7 +12,7 @@
   import Editor from "./editor/editor.entry.svelte";
   import Document from "../components/document.entry.svelte";
   import Response from "./response.svelte";
-  import Prefetch from "./prefetch.svelte";
+  // import Prefetch from "./prefetch.svelte";
   import Spinner from "../components/spinner.svelte";
   import Loader from "../components/loader.svelte";
 
@@ -50,9 +50,9 @@
 
 <Document>
   <svelte:fragment slot="head">
-    <Prefetch
+    <!-- <Prefetch
       sessions="{sessions.filter((s) => s.slug !== current_session.slug)}"
-    />
+    /> -->
 
     {@html encode({ content: request?.body }, { id: "PAGE_DATA" })}
 
@@ -65,11 +65,21 @@
     <header
       class="flex items-center justify-between px-4 py-2 border-b bg-white sticky top-0 z-10"
     >
-      <button class="js-toggle-side-nav side-nav-toggle">
-        <MenuIcon size="{20}" class="pointer-events-none" />
-      </button>
+      <div class="flex items-center gap-4">
+        <button class="js-toggle-side-nav side-nav-toggle">
+          <MenuIcon size="{20}" class="pointer-events-none" />
+        </button>
+
+        <img src="/logo.svg" alt="Tami" width="60" />
+      </div>
 
       <div class="flex items-center gap-4 w-2/4">
+        <form action="/session/new" method="post" class="flex">
+          <button>
+            <PlusIcon size="{20}" />
+          </button>
+        </form>
+
         <div
           class="flex border items-center rounded-md flex-1 overflow-hidden text-sm input-box"
         >
@@ -189,7 +199,7 @@
             <div>
               <table class="w-full border-t border-b text-sm">
                 <tbody class="divide-y">
-                  {#if request.query}
+                  {#if request?.query}
                     {#each request.query as [key, value], i}
                       <KeyValue
                         {key}
@@ -242,7 +252,7 @@
               <Editor
                 id="body-editor"
                 language="js"
-                code="{request.body ?? ''}"
+                code="{request?.body ?? ''}"
               />
             </div>
 
@@ -251,7 +261,7 @@
               id="body"
               type="text"
               name="body"
-              value="{request.body ?? ''}"
+              value="{request?.body ?? ''}"
             />
           </div>
 
@@ -270,7 +280,7 @@
 
             <table class="w-full border-t border-b text-sm">
               <tbody class="divide-y">
-                {#if request.headers}
+                {#if request?.headers}
                   {#each Object.entries(request.headers) as [key, value]}
                     <KeyValue
                       {key}
