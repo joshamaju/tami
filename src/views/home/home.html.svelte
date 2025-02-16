@@ -75,7 +75,7 @@
 
       <div class="flex items-center gap-4 w-2/4">
         <form action="/session/new" method="post" class="flex">
-          <button>
+          <button title="New request">
             <PlusIcon size="{20}" />
           </button>
         </form>

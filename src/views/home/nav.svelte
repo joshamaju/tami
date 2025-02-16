@@ -4,6 +4,7 @@
   import CopyIcon from "lucide-svelte/icons/copy";
   import GlobeIcon from "lucide-svelte/icons/globe";
   import TrashIcon from "lucide-svelte/icons/trash-2";
+  // import SearchIcon from "lucide-svelte/icons/search";
   //   import EllipsisIcon from "lucide-svelte/icons/ellipsis-vertical";
 
   import type { Session } from "../../core/session";
@@ -54,67 +55,78 @@
       </form>
     </div>
   {:else}
-    <ul class="space-y-2 text-sm">
-      {#each sessions as session}
-        {@const request = session.request}
-        {@const url = get_url(request?.url)}
-        <li
-          title="{request ? `${request.method} ${request?.url}` : null}"
-          class="flex items-center justify-between px-4 py-1 gap-2 rounded-md {current_session.slug ==
-          session.slug
-            ? 'bg-slate-300'
-            : ''}"
-        >
-          <a
-            href="/?session={session.slug}"
-            class="truncate whitespace-nowrap space-x-2"
-          >
-            {#if request && url}
-              <span
-                class="font-medium {request.method == Method.GET
-                  ? 'text-green-600'
-                  : request.method == Method.POST
-                    ? 'text-blue-600'
-                    : request.method == Method.PUT
-                      ? 'text-orange-600'
-                      : request.method == Method.DELETE
-                        ? 'text-red-600'
-                        : ''}"
-              >
-                {request.method}
-              </span>
-              <span>{url.hostname}{url.pathname}</span>
-            {:else}
-              <span>{session.slug}</span>
-            {/if}
-          </a>
+    <div class="space-y-4">
+      <!-- <label class="flex items-center rounded-md bg-white shadow-sm">
+        <SearchIcon size="{15}" class="m-2 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search"
+          class="flex-1 bg-none placeholder-gray-300"
+        />
+      </label> -->
 
-          <div class="hidden actions">
-            <div class="flex gap-2 items-center">
-              <!-- <button type="button" popovertarget="popover-action-{i}">
+      <ul class="space-y-2 text-sm">
+        {#each sessions as session}
+          {@const request = session.request}
+          {@const url = get_url(request?.url)}
+          <li
+            title="{request ? `${request.method} ${request?.url}` : null}"
+            class="flex items-center justify-between px-4 py-1 gap-2 rounded-md {current_session.slug ==
+            session.slug
+              ? 'bg-slate-300'
+              : ''}"
+          >
+            <a
+              href="/?session={session.slug}"
+              class="truncate whitespace-nowrap space-x-2"
+            >
+              {#if request && url}
+                <span
+                  class="font-medium {request.method == Method.GET
+                    ? 'text-green-600'
+                    : request.method == Method.POST
+                      ? 'text-blue-600'
+                      : request.method == Method.PUT
+                        ? 'text-orange-600'
+                        : request.method == Method.DELETE
+                          ? 'text-red-600'
+                          : ''}"
+                >
+                  {request.method}
+                </span>
+                <span>{url.hostname}{url.pathname}</span>
+              {:else}
+                <span>{session.slug}</span>
+              {/if}
+            </a>
+
+            <div class="hidden actions">
+              <div class="flex gap-2 items-center">
+                <!-- <button type="button" popovertarget="popover-action-{i}">
               <EllipsisIcon size="{15}" />
             </button> -->
 
-              <form method="post" action="/session/duplicate">
-                <button name="slug" value="{session.slug}">
-                  <CopyIcon size="{15}" />
-                </button>
-              </form>
+                <form method="post" action="/session/duplicate">
+                  <button name="slug" value="{session.slug}">
+                    <CopyIcon size="{15}" />
+                  </button>
+                </form>
 
-              <form action="/session/delete" method="post" class="contents">
-                <button name="slug" value="{session.slug}">
-                  <TrashIcon size="{15}" />
-                </button>
-              </form>
-            </div>
+                <form action="/session/delete" method="post" class="contents">
+                  <button name="slug" value="{session.slug}">
+                    <TrashIcon size="{15}" />
+                  </button>
+                </form>
+              </div>
 
-            <!-- <div popover="auto" id="popover-action-{i}">
+              <!-- <div popover="auto" id="popover-action-{i}">
             <p>popover</p>
           </div> -->
-          </div>
-        </li>
-      {/each}
-    </ul>
+            </div>
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 </nav>
 
