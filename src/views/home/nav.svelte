@@ -94,7 +94,9 @@
                 >
                   {request.method}
                 </span>
-                <span>{url.hostname}{url.pathname}</span>
+                <span>
+                  {url.hostname}{url.pathname == "/" ? "" : url.pathname}
+                </span>
               {:else}
                 <span>{session.slug}</span>
               {/if}
