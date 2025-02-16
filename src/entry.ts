@@ -48,17 +48,10 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// app.use(async (_, __, next) => {
-//   if (manager.empty) await manager.newSession();
-//   next();
-// });
-
 app.get("/", async (req, res) => {
   const slug = req.query.session;
 
   let session = typeof slug === "string" ? await manager.get(slug) : null;
-
-  // console.log(slug, session);
 
   if (slug && !session) {
     return res.status(404).render("404");
@@ -70,8 +63,7 @@ app.get("/", async (req, res) => {
 
   return res.render("home/home", {
     session,
-    sessions: [],
-    // sessions: manager.sessions.map((_) => _.session),
+    sessions: manager.sessions.map((_) => _.session),
     response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });
 });
