@@ -1,11 +1,13 @@
 // @ts-check
-
+import { fileURLToPath } from "node:url";
 import express, { static as static_ } from "express";
 import router from "../dist/server/index.js";
 
 const app = express();
 
-const serve_build_assets = static_("./dist", {
+const build_path = fileURLToPath(new URL("../dist", import.meta.url));
+
+const serve_build_assets = static_(build_path, {
   immutable: true,
   maxAge: "1y",
 });
