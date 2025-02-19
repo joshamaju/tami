@@ -6,6 +6,7 @@ import router from "../dist/server/index.js";
 const app = express();
 
 const build_path = fileURLToPath(new URL("../dist", import.meta.url));
+const static_path = fileURLToPath(new URL("../static", import.meta.url));
 
 const serve_build_assets = static_(build_path, {
   immutable: true,
@@ -16,7 +17,7 @@ app.disable("x-powered-by");
 
 app.use(serve_build_assets);
 
-app.use(static_("static", { maxAge: "1h" }));
+app.use(static_(static_path, { maxAge: "1h" }));
 
 app.use(router);
 
