@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.0.4
+
+### Patch Changes
+
+- 50927e7: Fix request body and headers form data handling
+
 ## 0.0.3
 
 ### Patch Changes
