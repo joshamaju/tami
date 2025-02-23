@@ -44,9 +44,6 @@ htmx.onLoad(() => {
     'select[name="content-type"]'
   ) as Select | null;
 
-  const add_query = document.querySelector(".js-add-query");
-  const add_header = document.querySelector(".js-add-header");
-
   document.addEventListener("htmx:beforeSend", () => {
     document.body.setAttribute("data-submitting", "true");
   });
@@ -59,44 +56,45 @@ htmx.onLoad(() => {
     document.body.removeAttribute("data-submitting");
   });
 
-  add_query?.addEventListener("click", () => {
-    // clone an existing search query parameter row
-    const row = document.querySelector(".js-query-row");
-
-    if (row) {
-      const id = crypto.randomUUID();
-
-      const clone = row.cloneNode(true) as HTMLElement;
-      const parent = row.parentElement;
-
-      const remove = clone.querySelector("button[data-remove]");
-      remove?.setAttribute("data-key", id);
-      remove?.removeAttribute("disabled");
-      remove?.removeAttribute("hidden");
-
-      const fields = clone.querySelectorAll("input");
-      fields.forEach((field) => (field.value = ""));
-
-      clone.id = id;
-
-      parent?.appendChild(clone);
-    }
-  });
-
-  add_header?.addEventListener("click", () => {
-    make_header("", "");
-  });
+  const header_panel = document.getElementById("req-headers-panel");
 
   content_type?.addEventListener("change", (e) => {
-    const id = "request-header-content-type";
     const type = (e.target as Select).value;
 
-    document.getElementById(id)?.remove();
+    const id = "header_content_type";
 
-    if (type.trim() !== "") {
-      const el = make_header("Content-Type", type);
-      if (el) el.id = id;
+    let node: HTMLElement | null | undefined = document.getElementById(id);
+
+    if (!node) {
+      type El = HTMLElement | null;
+
+      const selector = '[data-row-action="new"]';
+      const action_new = header_panel?.querySelector(selector) as El;
+
+      if (action_new) {
+        action_new.click();
+
+        const index = action_new.dataset.index;
+        node = header_panel?.querySelector(`[data-row-index="${index}"]`);
+      }
     }
+
+    const key = node?.querySelector('[data-slot="key"]');
+    const value = node?.querySelector('[data-slot="value"]');
+    const remove = node?.querySelector('[data-row-action="remove"]');
+
+    const k = key as HTMLInputElement | null;
+    const v = value as HTMLInputElement | null;
+
+    if (k) k.value = "Content-Type";
+
+    if (v) v.value = type;
+
+    if (remove) {
+      remove.setAttribute("data-row-target", id);
+    }
+
+    if (node) node.id = id;
   });
 
   editor?.addEventListener("editor:update", (e) => {
@@ -104,34 +102,3 @@ htmx.onLoad(() => {
     if (body) body.value = event.detail.doc;
   });
 });
-
-function make_header(key: string, value: string) {
-  const row = document.querySelector(".js-header-row");
-
-  if (row) {
-    const parent = row.parentElement;
-    const clone = row.cloneNode(true) as HTMLElement;
-
-    const id = crypto.randomUUID();
-
-    const remove = clone.querySelector("button[data-remove]");
-    remove?.setAttribute("data-key", id);
-    remove?.removeAttribute("disabled");
-    remove?.removeAttribute("hidden");
-
-    const k = clone?.querySelector("input[name='header_key']") as Input | null;
-
-    const v = clone?.querySelector(
-      "input[name='header_value']"
-    ) as Input | null;
-
-    if (k) k.value = key;
-    if (v) v.value = value;
-
-    clone.id = id;
-
-    parent?.appendChild(clone);
-
-    return clone;
-  }
-}

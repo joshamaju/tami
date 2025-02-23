@@ -45,7 +45,7 @@ app.use(
 
 app.use(compression());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/", async (req, res) => {
@@ -75,34 +75,29 @@ app.post("/", async (req, res) => {
 
   session ??= await manager.newSession();
 
-  const {
-    url,
-    body,
-    query_key,
-    query_value,
-    header_key,
-    header_value,
-    method = Method.GET,
-  } = req.body;
+  const { url, body, method = Method.GET } = req.body;
 
-  const query = [] as SessionRequest["query"];
+  type KV = Record<"key" | "value", string>;
 
-  if (query_key) {
-    query_key.forEach((k: string, i: number) => {
-      const key = k.toString();
-      const value = query_value[i];
-      if (key.trim() !== "" && value) query?.push([key, value?.toString()]);
-    });
+  let query = [] as SessionRequest["query"];
+
+  const queries = req.body.query as Array<KV> | undefined;
+  const _headers = req.body.header as Array<KV> | undefined;
+
+  if (queries) {
+    query = queries
+      .filter(({ key }) => key.trim() !== "")
+      .map(({ key, value }) => [key, value]);
   }
 
-  const headers = {} as Record<string, string>;
+  let headers = {} as Record<string, string>;
 
-  if (header_key) {
-    header_key.forEach((k: string, i: number) => {
-      const key = k.toString();
-      const value = header_value[i];
-      if (key.trim() !== "" && value) headers[key] = value?.toString();
-    });
+  if (_headers) {
+    headers = Object.fromEntries(
+      _headers
+        .filter(({ key }) => key.trim() !== "")
+        .map(({ key, value }) => [key, value])
+    );
   }
 
   session.update({ url, query, body, method, headers });

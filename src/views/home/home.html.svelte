@@ -8,7 +8,6 @@
   import PlayIcon from "lucide-svelte/icons/play";
 
   import SideNav from "./nav.svelte";
-  import KeyValue from "./key-value/key-value.entry.svelte";
   import Editor from "./editor/editor.entry.svelte";
   import Document from "../components/document.entry.svelte";
   import Response from "./response.svelte";
@@ -20,6 +19,7 @@
   import { Method } from "../../types/method";
   import type { Session } from "../../core/session";
   import { ContentType as ContentTypes } from "../../types/content-type";
+  import KeyValue from "./key-value/key-value.entry.svelte";
 
   export let session: Session;
   export let sessions: Array<Session>;
@@ -44,8 +44,10 @@
     { label: "DELETE", value: Method.DELETE },
   ];
 
-  const query_names = { key: "query_key", value: "query_value" };
-  const header_names = { key: "header_key", value: "header_value" };
+  const empty = [["", ""]] as const;
+
+  const query = request?.query;
+  const header = request?.headers ? Object.entries(request.headers) : [];
 </script>
 
 <Document>
@@ -183,45 +185,20 @@
             </button>
           </nav>
 
-          <div
+          <KeyValue
             hidden
+            name="query"
             role="tabpanel"
             id="parameters-panel"
             aria-labelledby="parameters-tab"
+            data="{(query && query.length > 0 ? query : empty).map(
+              ([key, value]) => ({ key, value })
+            )}"
           >
-            <div class="flex items-center justify-between gap-2 p-2">
-              <label for="parameters" class="block">Query Parameters</label>
-              <button type="button" class="js-add-query">
-                <PlusIcon size="{20}" />
-              </button>
-            </div>
-
-            <div>
-              <table class="w-full border-t border-b text-sm">
-                <tbody class="divide-y">
-                  {#if request?.query}
-                    {#each request.query as [key, value], i}
-                      <KeyValue
-                        {key}
-                        {value}
-                        id="query-{i}"
-                        class="js-query-row"
-                        names="{query_names}"
-                      />
-                    {/each}
-                  {/if}
-
-                  <KeyValue
-                    key=""
-                    value=""
-                    removeable="{false}"
-                    class="js-query-row"
-                    names="{query_names}"
-                  />
-                </tbody>
-              </table>
-            </div>
-          </div>
+            <label slot="title" for="parameters" class="block">
+              Query Parameters
+            </label>
+          </KeyValue>
 
           <div id="body-panel" role="tabpanel" aria-labelledby="body-tab">
             <div class="flex justify-between items-center">
@@ -265,43 +242,25 @@
             />
           </div>
 
-          <div
+          <KeyValue
             hidden
+            name="header"
             role="tabpanel"
             id="req-headers-panel"
             aria-labelledby="req-headers-tab"
+            data="{(header.length > 0 ? header : empty).map(([key, value]) => ({
+              key,
+              value,
+              id:
+                key == 'content-type' || key == 'Content-Type'
+                  ? 'header_content_type'
+                  : undefined,
+            }))}"
           >
-            <div class="flex items-center justify-between gap-2 p-2">
-              <label for="header_key" class="block">Headers List</label>
-              <button type="button" class="js-add-header">
-                <PlusIcon size="{20}" />
-              </button>
-            </div>
-
-            <table class="w-full border-t border-b text-sm">
-              <tbody class="divide-y">
-                {#if request?.headers}
-                  {#each Object.entries(request.headers) as [key, value]}
-                    <KeyValue
-                      {key}
-                      {value}
-                      class="js-header-row"
-                      names="{header_names}"
-                      id="{key == 'Content-Type' ? 'content-type' : null}"
-                    />
-                  {/each}
-                {/if}
-
-                <KeyValue
-                  key=""
-                  value=""
-                  removeable="{false}"
-                  class="js-header-row"
-                  names="{header_names}"
-                />
-              </tbody>
-            </table>
-          </div>
+            <label slot="title" for="header_key" class="block">
+              Headers List
+            </label>
+          </KeyValue>
         </form>
 
         <div id="result" hx-swap-oob="true">
