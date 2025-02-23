@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.0.3
+
+### Patch Changes
+
+- fa4fc63: Use fully resolved static directory for serving static assets
+
 ## 0.0.2
 
 ### Patch Changes
