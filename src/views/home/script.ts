@@ -4,6 +4,9 @@ import htmx from "htmx.org";
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
 
+// @ts-expect-error
+window.htmx = htmx;
+
 document.addEventListener("click", (e) => {
   const target = e.target as HTMLElement;
 
