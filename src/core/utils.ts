@@ -1,6 +1,6 @@
 import { ContentType } from "@mjackson/headers";
 import * as prettier from "prettier";
-import type { SessionResponse } from "../types/session";
+import type * as Session from "../types/session";
 
 export type FormattedResponse =
   | { type: "image"; content: string }
@@ -12,7 +12,7 @@ const IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/svg+xml"];
 
 const XML_TYPES = ["text/html"];
 
-export function media_type(response: Response | SessionResponse) {
+export function media_type(response: Response | Session.Response) {
   const content_type =
     response instanceof Response
       ? (response.headers.get("content-type") ?? undefined)
@@ -21,7 +21,7 @@ export function media_type(response: Response | SessionResponse) {
   return new ContentType(content_type).mediaType;
 }
 
-export function is_image(response: Response | SessionResponse) {
+export function is_image(response: Response | Session.Response) {
   const contentType = media_type(response);
   if (contentType) return IMAGE_TYPES.includes(contentType);
   return false;
@@ -51,7 +51,7 @@ export function is_image(response: Response | SessionResponse) {
 // }
 
 export async function format(
-  response: SessionResponse
+  response: Session.Response
 ): Promise<FormattedResponse | null> {
   if (!response.body) return null;
 

@@ -1,14 +1,16 @@
 type KeyValue = [name: string, value: string];
 
-export type SessionRequest = {
-  url?: string;
-  body?: string;
-  method?: string;
-  query?: Array<KeyValue>;
-  headers?: Record<string, string>;
+export type IRequest = {
+  url: string;
+  body: string;
+  method: string;
+  query: Array<KeyValue>;
+  headers: Record<string, string>;
 };
 
-export type SessionResponse = {
+export type Request = Partial<IRequest>;
+
+export type Response = {
   body?: string;
   status: number;
   duration: number;
@@ -18,6 +20,7 @@ export type SessionResponse = {
 
 export type Session = {
   slug: string;
-  request?: SessionRequest;
-  response?: SessionResponse | undefined;
+  request?: Request;
+  meta: Record<string, unknown>;
+  response?: Response | undefined;
 };

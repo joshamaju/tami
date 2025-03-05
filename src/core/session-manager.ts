@@ -1,98 +1,92 @@
 import { spaceSlug } from "space-slug";
 import { Session } from "./session";
+import type { Session as ISession } from "../types/session";
 import type { Storage } from "./storage/interface";
 
 export class SessionManager {
-  private _sessions = new Map<string, { loaded: boolean; session: Session }>();
+  private mapping = new Map<string, Session>();
 
   constructor(private storage: Storage) {}
 
   get empty() {
-    return this._sessions.size <= 0;
+    return this.mapping.size <= 0;
   }
 
   get sessions() {
-    return [...this._sessions.values()];
+    return [...this.mapping.values()];
   }
 
   peek() {
-    const [first] = [...this._sessions.values()];
-    return first?.session;
+    return [...this.mapping.values()][0];
   }
 
   async newSession() {
     const slug = spaceSlug();
-    const session = new Session({ slug });
-    this._sessions.set(slug, { loaded: true, session });
-    await this.saveSession(session);
+    const session = new Session(slug);
+    this.mapping.set(slug, session);
+    await this.save(session);
     return session;
   }
 
-  async clone(session: Session) {
+  async clone(_: Session) {
     const slug = spaceSlug();
 
-    const new_session = new Session(
-      { slug },
-      session.request,
-      session.response
-    );
+    let data: ISession | null = null;
 
-    const old_session = this._sessions.get(session.slug);
+    if (!this.storage.loaded(_)) {
+      data = await this.storage.get(slug);
+    }
 
-    this._sessions.set(slug, {
-      session: new_session,
-      loaded: old_session?.loaded ?? false,
-    });
+    const meta = data?.meta ?? _.meta;
+    const req = data?.request ?? _.request;
+    const res = data?.response ?? _.response;
 
-    await this.saveSession(session);
+    const session = new Session(slug, req, res, meta);
 
-    return new_session;
+    this.mapping.set(slug, session);
+
+    await this.save(_);
+
+    return session;
   }
 
   async get(slug: string) {
-    let item = this._sessions.get(slug);
-    let session = item?.session;
+    let session = this.mapping.get(slug);
 
-    if (item && !item.loaded) {
-      const _ = await this.storage.loadOne(slug);
-      session = new Session({ slug }, _?.request, _?.response);
-      this._sessions.set(slug, { loaded: true, session });
+    if (session && !this.storage.loaded(session)) {
+      const _ = await this.storage.get(slug);
+      session = new Session(slug, _?.request, _?.response, _?.meta);
+      this.mapping.set(slug, session);
     }
 
     return session;
   }
 
   remove(slug: string) {
-    this._sessions.delete(slug);
+    this.mapping.delete(slug);
     return this.storage.remove(slug);
   }
 
   async update(session: Session) {
-    const old = this._sessions.get(session.slug);
-    this._sessions.set(session.slug, { loaded: old?.loaded ?? false, session });
-    await this.saveSession(session);
+    this.mapping.set(session.slug, session);
+    await this.save(session);
   }
 
-  async saveSession(session: Session) {
-    const data = session.toJson();
-    await this.storage.save(data);
+  async save(session: Session) {
+    await this.storage.save(session.toJson());
   }
 
-  async save() {
-    const sessions = [...this._sessions.values()].map((_) =>
-      _.session.toJson()
-    );
-    return this.storage.save(...(await Promise.all(sessions)));
+  async save_all() {
+    const sessions = this.mapping.values().map((_) => _.toJson());
+    await this.storage.save(...sessions);
   }
 
   async load() {
     const contents = await this.storage.load();
 
     contents.forEach(({ slug, ..._ }) => {
-      this._sessions.set(slug, {
-        loaded: false,
-        session: new Session({ slug }, _.request),
-      });
+      const session = new Session(slug, _.request, _.response, _.meta);
+      this.mapping.set(slug, session);
     });
   }
 }

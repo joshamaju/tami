@@ -15,7 +15,7 @@ import { SessionManager } from "./core/session-manager";
 import { DiskStorage } from "./core/storage/disk-storage";
 import { format } from "./core/utils";
 import { Method } from "./types/method";
-import type { SessionRequest } from "./types/session";
+import type { Request } from "./types/session";
 import { resolve } from "./utils/view";
 
 const manager = new SessionManager(new DiskStorage());
@@ -63,7 +63,7 @@ app.get("/", async (req, res) => {
 
   return res.render("home/home", {
     session,
-    sessions: manager.sessions.map((_) => _.session),
+    sessions: manager.sessions,
     response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });
 });
@@ -79,7 +79,7 @@ app.post("/", async (req, res) => {
 
   type KV = Record<"key" | "value", string>;
 
-  let query = [] as SessionRequest["query"];
+  let query = [] as Request["query"];
 
   const queries = req.body.query as Array<KV> | undefined;
   const _headers = req.body.header as Array<KV> | undefined;
@@ -119,7 +119,7 @@ app.post("/", async (req, res) => {
   return res.render("home/home", {
     session,
     response: await fn(),
-    sessions: manager.sessions.map((_) => _.session),
+    sessions: manager.sessions,
   });
 });
 
