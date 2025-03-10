@@ -28,7 +28,7 @@
       <p>
         Time - <span class="text-green-700">{display_time(res.duration)}</span>
       </p>
-      <p>Size - <span class="text-green-700">{body_size}</span></p>
+      <p>Size - <span class="text-green-700">{body_size ?? 0}</span></p>
     </div>
 
     <div>

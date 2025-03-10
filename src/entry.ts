@@ -57,7 +57,8 @@ app.get("/", async (req, res) => {
     return res.status(404).render("404");
   }
 
-  session ??= manager.peek() ?? (await manager.newSession());
+  session ??= await manager.peek();
+  session ??= await manager.newSession();
 
   const resp = session.response;
 

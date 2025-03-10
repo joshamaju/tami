@@ -17,7 +17,9 @@ export class SessionManager {
   }
 
   peek() {
-    return [...this.mapping.values()][0];
+    const first = [...this.mapping.values()][0];
+    if (first) return this.get(first.slug);
+    return null;
   }
 
   async newSession() {
@@ -34,7 +36,7 @@ export class SessionManager {
     let data: ISession | null = null;
 
     if (!this.storage.loaded(_)) {
-      data = await this.storage.get(slug);
+      data = await this.storage.get(_.slug);
     }
 
     const meta = data?.meta ?? _.meta;
@@ -45,7 +47,7 @@ export class SessionManager {
 
     this.mapping.set(slug, session);
 
-    await this.save(_);
+    await this.save(session);
 
     return session;
   }
