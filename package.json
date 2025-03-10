@@ -23,9 +23,9 @@
   ],
   "scripts": {
     "dev": "stack54 dev",
-    "test:unit": "vitest",
     "build": "stack54 build",
     "changeset": "changeset",
+    "test:unit": "vitest run",
     "prepublish": "pnpm build",
     "release": "changeset publish",
     "start": "node ./bin/start.js",
