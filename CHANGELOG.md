@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.0.5
+
+### Patch Changes
+
+- 2ba76cc: Refactor headers and search parameters table
+
 ## 0.0.4
 
 ### Patch Changes
