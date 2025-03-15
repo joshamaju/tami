@@ -1,6 +1,8 @@
 import "htmx.org";
 import htmx from "htmx.org";
 
+import type { KeyValue } from "./key-value/key-value.component";
+
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
 
@@ -59,43 +61,43 @@ htmx.onLoad(() => {
     document.body.removeAttribute("data-submitting");
   });
 
-  const header_panel = document.getElementById("req-headers-panel");
+  const header_panel = document.getElementById(
+    "req-headers-panel-fieldset"
+  ) as KeyValue | null;
 
   content_type?.addEventListener("change", (e) => {
     const type = (e.target as Select).value;
 
     const id = "header_content_type";
 
-    let node: HTMLElement | null | undefined = document.getElementById(id);
+    if (!header_panel) return;
+
+    let node = document.getElementById(id);
 
     if (!node) {
-      type El = HTMLElement | null;
+      // type El = HTMLElement | null;
 
-      const selector = '[data-row-action="new"]';
-      const action_new = header_panel?.querySelector(selector) as El;
+      // const selector = '[data-row-action="new"]';
+      // const action_new = header_panel?.querySelector(selector) as El;
 
-      if (action_new) {
-        action_new.click();
+      node = header_panel.new();
 
-        const index = action_new.dataset.index;
-        node = header_panel?.querySelector(`[data-row-index="${index}"]`);
-      }
+      // if (action_new) {
+      //   action_new.click();
+
+      //   const index = action_new.dataset.index;
+      //   node = header_panel?.querySelector(`[data-row-index="${index}"]`);
+      // }
     }
 
     const key = node?.querySelector('[data-slot="key"]');
     const value = node?.querySelector('[data-slot="value"]');
-    const remove = node?.querySelector('[data-row-action="remove"]');
 
     const k = key as HTMLInputElement | null;
     const v = value as HTMLInputElement | null;
 
     if (k) k.value = "Content-Type";
-
     if (v) v.value = type;
-
-    if (remove) {
-      remove.setAttribute("data-row-target", id);
-    }
 
     if (node) node.id = id;
   });

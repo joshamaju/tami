@@ -5,47 +5,54 @@
 
   type $$Props = HTMLAttributes<HTMLTableRowElement> & {
     name: string;
-    data: Array<{ key: string; value: string; id?: string }>;
+    data: Array<{
+      id?: string;
+      key: string;
+      value: string;
+      removeable?: boolean;
+    }>;
   };
 
   export let name: $$Props["name"];
+  export let id: $$Props["id"] = undefined;
   export let data: $$Props["data"] = [];
+
+  const key_pattern = `${name}[{index}][key]`
+  const value_pattern = `${name}[{index}][value]`
 </script>
 
 <svelte:head>
-  <script type="module" src="./script.ts"></script>
+  <script type="module" src="./define.ts"></script>
 </svelte:head>
 
-<div {...$$restProps}>
-  <div class="flex items-center justify-between gap-2 p-2">
-    <slot name="title" />
+<key-value-fieldset {id} index="{data.length - 1}" style="display: contents;">
+  <div {...$$restProps}>
+    <div class="flex items-center justify-between gap-2 p-2">
+      <slot name="title" />
 
-    <button
-      type="button"
-      data-name="{name}"
-      data-row-action="new"
-      data-index="{data.length}"
-    >
-      <PlusIcon size="{20}" class="pointer-events-none" />
-    </button>
+      <button type="button" data-trigger="new">
+        <PlusIcon size="{20}" class="pointer-events-none" />
+      </button>
+    </div>
+
+    <table class="w-full border-t border-b text-sm">
+      <tbody data-content class="divide-y">
+        {#each data as { id, key, value, removeable }, i}
+          <Row
+            {removeable}
+            id="{id ?? `row-${name}-template-${i}`}"
+            key="{{ name: `${name}[${i}][key]`, value: key, pattern: key_pattern }}"
+            value="{{ name: `${name}[${i}][value]`, value, pattern: value_pattern }}"
+          />
+        {/each}
+      </tbody>
+    </table>
   </div>
 
-  <table class="w-full border-t border-b text-sm">
-    <tbody class="divide-y">
-      {#each data as { id, key, value }, i}
-        <Row
-          index="{i}"
-          id="{id ?? `row-${name}-template=${i}`}"
-          value="{{ name: `${name}[${i}][value]`, value }}"
-          key="{{ name: `${name}[${i}][key]`, value: key }}"
-        />
-      {/each}
-
-      <Row
-        template="{name}"
-        key="{{ name: '', value: '' }}"
-        value="{{ name: '', value: '' }}"
-      />
-    </tbody>
-  </table>
-</div>
+  <template>
+    <Row
+      value="{{ name: `${name}[{index}][value]`, value: '', pattern: value_pattern }}"
+      key="{{ name: `${name}[{index}][key]`, value: '', pattern: key_pattern }}"
+    />
+  </template>
+</key-value-fieldset>

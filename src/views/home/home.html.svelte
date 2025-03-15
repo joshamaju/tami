@@ -185,20 +185,23 @@
             </button>
           </nav>
 
-          <KeyValue
+          <div
             hidden
-            name="query"
             role="tabpanel"
             id="parameters-panel"
             aria-labelledby="parameters-tab"
-            data="{(query && query.length > 0 ? query : empty).map(
-              ([key, value]) => ({ key, value })
-            )}"
           >
-            <label slot="title" for="parameters" class="block">
-              Query Parameters
-            </label>
-          </KeyValue>
+            <KeyValue
+              name="query"
+              data="{(query && query.length > 0 ? query : empty).map(
+                ([key, value]) => ({ key, value })
+              )}"
+            >
+              <label slot="title" for="parameters" class="block">
+                Query Parameters
+              </label>
+            </KeyValue>
+          </div>
 
           <div id="body-panel" role="tabpanel" aria-labelledby="body-tab">
             <div class="flex justify-between items-center">
@@ -242,25 +245,31 @@
             />
           </div>
 
-          <KeyValue
+          <div
             hidden
-            name="header"
             role="tabpanel"
             id="req-headers-panel"
             aria-labelledby="req-headers-tab"
-            data="{(header.length > 0 ? header : empty).map(([key, value]) => ({
-              key,
-              value,
-              id:
-                key == 'content-type' || key == 'Content-Type'
-                  ? 'header_content_type'
-                  : undefined,
-            }))}"
           >
-            <label slot="title" for="header_key" class="block">
-              Headers List
-            </label>
-          </KeyValue>
+            <KeyValue
+              name="header"
+              id="req-headers-panel-fieldset"
+              data="{(header.length > 0 ? header : empty).map(
+                ([key, value]) => ({
+                  key,
+                  value,
+                  id:
+                    key == 'content-type' || key == 'Content-Type'
+                      ? 'header_content_type'
+                      : undefined,
+                })
+              )}"
+            >
+              <label slot="title" for="header_key" class="block">
+                Headers List
+              </label>
+            </KeyValue>
+          </div>
         </form>
 
         <div id="result" hx-swap-oob="true">

@@ -1,9 +1,15 @@
 ## Tami
 
-## How to use
+## Quick start
 
 ```bash
-npx tami
+npx tami-client
+```
+
+## Install locally
+
+```bash
+npm i -g tami-client
 ```
 
 ## Contributing
