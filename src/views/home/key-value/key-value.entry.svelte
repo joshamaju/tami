@@ -17,8 +17,8 @@
   export let id: $$Props["id"] = undefined;
   export let data: $$Props["data"] = [];
 
-  const key_pattern = `${name}[{index}][key]`
-  const value_pattern = `${name}[{index}][value]`
+  const key_pattern = `${name}[{index}][key]`;
+  const value_pattern = `${name}[{index}][value]`;
 </script>
 
 <svelte:head>
@@ -41,8 +41,16 @@
           <Row
             {removeable}
             id="{id ?? `row-${name}-template-${i}`}"
-            key="{{ name: `${name}[${i}][key]`, value: key, pattern: key_pattern }}"
-            value="{{ name: `${name}[${i}][value]`, value, pattern: value_pattern }}"
+            key="{{
+              value: key,
+              pattern: key_pattern,
+              name: `${name}[${i}][key]`,
+            }}"
+            value="{{
+              value,
+              pattern: value_pattern,
+              name: `${name}[${i}][value]`,
+            }}"
           />
         {/each}
       </tbody>
@@ -51,8 +59,12 @@
 
   <template>
     <Row
-      value="{{ name: `${name}[{index}][value]`, value: '', pattern: value_pattern }}"
       key="{{ name: `${name}[{index}][key]`, value: '', pattern: key_pattern }}"
-    />
+      value="{{
+        value: '',
+        pattern: value_pattern,
+        name: `${name}[{index}][value]`,
+      }}"
+    ></Row>
   </template>
 </key-value-fieldset>
