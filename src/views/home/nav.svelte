@@ -35,28 +35,29 @@
 <nav
   {...$$restProps}
   class="{[
-    'w-1/5 h-full border-r bg-gray-100 space-y-2 p-2',
+    'w-1/5 h-full border-r bg-gray-100 flex flex-col',
     $$restProps.class ?? '',
   ].join(' ')}"
 >
-  {#if sessions.length <= 0}
-    <div class="h-full flex flex-col items-center justify-center gap-3">
-      <div class="p-4 rounded-full bg-slate-200">
-        <GlobeIcon size="{100}" class="text-gray-300" />
+  <div class="flex-1 space-y-2 p-2">
+    {#if sessions.length <= 0}
+      <div class="h-full flex flex-col items-center justify-center gap-3">
+        <div class="p-4 rounded-full bg-slate-200">
+          <GlobeIcon size="{100}" class="text-gray-300" />
+        </div>
+        <h1 class="text-gray-500">Nothing here yet!</h1>
+        <form action="/session/new" method="post" class="flex">
+          <button
+            class="bg-[#4660ff] rounded-md py-1 px-4 text-white text-sm flex items-center gap-1 shadow-md"
+          >
+            <PlusIcon size="{15}" />
+            <span>New request</span>
+          </button>
+        </form>
       </div>
-      <h1 class="text-gray-500">Nothing here yet!</h1>
-      <form action="/session/new" method="post" class="flex">
-        <button
-          class="bg-[#4660ff] rounded-md py-1 px-4 text-white text-sm flex items-center gap-1 shadow-md"
-        >
-          <PlusIcon size="{15}" />
-          <span>New request</span>
-        </button>
-      </form>
-    </div>
-  {:else}
-    <div class="space-y-4">
-      <!-- <label class="flex items-center rounded-md bg-white shadow-sm">
+    {:else}
+      <div class="space-y-4">
+        <!-- <label class="flex items-center rounded-md bg-white shadow-sm">
         <SearchIcon size="{15}" class="m-2 text-gray-400" />
         <input
           type="text"
@@ -65,71 +66,83 @@
         />
       </label> -->
 
-      <ul class="space-y-2 text-sm">
-        {#each sessions as session}
-          {@const request = session.request}
-          {@const url = get_url(request?.url)}
-          <li
-            title="{request ? `${request.method} ${request?.url}` : null}"
-            class="flex items-center justify-between px-4 py-1 gap-2 rounded-md {current_session.slug ==
-            session.slug
-              ? 'bg-slate-300'
-              : ''}"
-          >
-            <a
-              href="/?session={session.slug}"
-              class="truncate whitespace-nowrap space-x-2"
+        <ul class="space-y-2 text-sm">
+          {#each sessions as session}
+            {@const request = session.request}
+            {@const url = get_url(request?.url)}
+            <li
+              title="{request ? `${request.method} ${request?.url}` : null}"
+              class="flex items-center justify-between px-4 py-1 gap-2 rounded-md {current_session.slug ==
+              session.slug
+                ? 'bg-slate-300'
+                : ''}"
             >
-              {#if request && url}
-                <span
-                  class="font-medium {request.method == Method.GET
-                    ? 'text-green-600'
-                    : request.method == Method.POST
-                      ? 'text-blue-600'
-                      : request.method == Method.PUT
-                        ? 'text-orange-600'
-                        : request.method == Method.DELETE
-                          ? 'text-red-600'
-                          : ''}"
-                >
-                  {request.method}
-                </span>
-                <span>
-                  {url.hostname}{url.pathname == "/" ? "" : url.pathname}
-                </span>
-              {:else}
-                <span>{session.slug}</span>
-              {/if}
-            </a>
+              <a
+                href="/?session={session.slug}"
+                class="truncate whitespace-nowrap space-x-2"
+              >
+                {#if request && url}
+                  <span
+                    class="font-medium {request.method == Method.GET
+                      ? 'text-green-600'
+                      : request.method == Method.POST
+                        ? 'text-blue-600'
+                        : request.method == Method.PUT
+                          ? 'text-orange-600'
+                          : request.method == Method.DELETE
+                            ? 'text-red-600'
+                            : ''}"
+                  >
+                    {request.method}
+                  </span>
+                  <span>
+                    {url.hostname}{url.pathname == "/" ? "" : url.pathname}
+                  </span>
+                {:else}
+                  <span>{session.slug}</span>
+                {/if}
+              </a>
 
-            <div class="hidden actions">
-              <div class="flex gap-2 items-center">
-                <!-- <button type="button" popovertarget="popover-action-{i}">
+              <div class="hidden actions">
+                <div class="flex gap-2 items-center">
+                  <!-- <button type="button" popovertarget="popover-action-{i}">
               <EllipsisIcon size="{15}" />
             </button> -->
 
-                <form method="post" action="/session/duplicate">
-                  <button name="slug" value="{session.slug}">
-                    <CopyIcon size="{15}" />
-                  </button>
-                </form>
+                  <form method="post" action="/session/duplicate">
+                    <button name="slug" value="{session.slug}">
+                      <CopyIcon size="{15}" />
+                    </button>
+                  </form>
 
-                <form action="/session/delete" method="post" class="contents">
-                  <button name="slug" value="{session.slug}">
-                    <TrashIcon size="{15}" />
-                  </button>
-                </form>
-              </div>
+                  <form action="/session/delete" method="post" class="contents">
+                    <button name="slug" value="{session.slug}">
+                      <TrashIcon size="{15}" />
+                    </button>
+                  </form>
+                </div>
 
-              <!-- <div popover="auto" id="popover-action-{i}">
+                <!-- <div popover="auto" id="popover-action-{i}">
             <p>popover</p>
           </div> -->
-            </div>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
+              </div>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
+  </div>
+
+  <div class="sticky bottom-0 bg-gray-100 p-4">
+    <a
+      href="mailto:joshsemail4work@gmail.com?subject={encodeURIComponent(
+        'Tami Issue Report'
+      )}"
+      class="p-2 rounded-lg border bg-white w-full block text-center text-sm font-medium"
+    >
+      Report issue
+    </a>
+  </div>
 </nav>
 
 <style>
