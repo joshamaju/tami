@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.1.0
+
+### Minor Changes
+
+- 9ca5549: Add syntax hilighting for different request body type
+
 ## 0.0.5
 
 ### Patch Changes
