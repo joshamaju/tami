@@ -4,7 +4,7 @@ import { Compartment, EditorState } from "@codemirror/state";
 import { basicSetup, EditorView } from "codemirror";
 import type { Config } from "./types";
 
-class Editor extends HTMLElement {
+export class Editor extends HTMLElement {
   #editor: EditorView | null = null;
 
   #readonly = new Compartment();
@@ -42,7 +42,7 @@ class Editor extends HTMLElement {
 
       if (name == "language") {
         const lang =
-          newValue == "js" ? javascript() : newValue == "html" ? html() : null;
+          newValue == "js" ? javascript() : newValue == "html" ? html() : [];
 
         if (lang) {
           editor.dispatch({ effects: this.#language.reconfigure(lang) });

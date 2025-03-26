@@ -2,6 +2,8 @@ import "htmx.org";
 import htmx from "htmx.org";
 
 import type { KeyValue } from "./key-value/key-value.component";
+import type { Editor } from "./editor/script";
+import { ContentType } from "../../types/content-type";
 
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
@@ -42,7 +44,8 @@ document.addEventListener("click", (e) => {
 });
 
 htmx.onLoad(() => {
-  const editor = document.getElementById("body-editor");
+  const editor = document.getElementById("body-editor") as Editor | null;
+
   const body = document.getElementById("body") as Input | null;
 
   const content_type = document.querySelector(
@@ -68,27 +71,22 @@ htmx.onLoad(() => {
   content_type?.addEventListener("change", (e) => {
     const type = (e.target as Select).value;
 
+    switch (type) {
+      case ContentType.TEXT:
+      case ContentType.URLENCODED:
+        editor?.setAttribute("language", "text");
+        break;
+
+      case ContentType.JSON:
+        editor?.setAttribute("language", "js");
+        break;
+    }
+
     const id = "header_content_type";
 
     if (!header_panel) return;
 
-    let node = document.getElementById(id);
-
-    if (!node) {
-      // type El = HTMLElement | null;
-
-      // const selector = '[data-row-action="new"]';
-      // const action_new = header_panel?.querySelector(selector) as El;
-
-      node = header_panel.new();
-
-      // if (action_new) {
-      //   action_new.click();
-
-      //   const index = action_new.dataset.index;
-      //   node = header_panel?.querySelector(`[data-row-index="${index}"]`);
-      // }
-    }
+    const node = document.getElementById(id) ?? header_panel.new();
 
     const key = node?.querySelector('[data-slot="key"]');
     const value = node?.querySelector('[data-slot="value"]');

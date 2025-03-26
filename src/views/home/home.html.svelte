@@ -29,6 +29,7 @@
   const request = session.request;
 
   const content_types = [
+    { label: "Text", value: ContentTypes.TEXT },
     { label: "JSON", value: ContentTypes.JSON },
     { label: "Form Data", value: ContentTypes.FORMDATA },
     { label: "URL Encoded", value: ContentTypes.URLENCODED },
@@ -230,8 +231,8 @@
 
             <div class="border min-h-40">
               <Editor
-                id="body-editor"
                 language="js"
+                id="body-editor"
                 code="{request?.body ?? ''}"
               />
             </div>
