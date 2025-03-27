@@ -4,6 +4,7 @@ import htmx from "htmx.org";
 import type { KeyValue } from "./key-value/key-value.component";
 import type { Editor } from "./editor/script";
 import { ContentType } from "../../types/content-type";
+import { emitter } from "./islands/store";
 
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
@@ -82,22 +83,24 @@ htmx.onLoad(() => {
         break;
     }
 
-    const id = "header_content_type";
+    emitter.emit("header_change", { key: "Content-Type", value: type });
 
-    if (!header_panel) return;
+    // const id = "header_content_type";
 
-    const node = document.getElementById(id) ?? header_panel.new();
+    // if (!header_panel) return;
 
-    const key = node?.querySelector('[data-slot="key"]');
-    const value = node?.querySelector('[data-slot="value"]');
+    // const node = document.getElementById(id) ?? header_panel.new();
 
-    const k = key as HTMLInputElement | null;
-    const v = value as HTMLInputElement | null;
+    // const key = node?.querySelector('[data-slot="key"]');
+    // const value = node?.querySelector('[data-slot="value"]');
 
-    if (k) k.value = "Content-Type";
-    if (v) v.value = type;
+    // const k = key as HTMLInputElement | null;
+    // const v = value as HTMLInputElement | null;
 
-    if (node) node.id = id;
+    // if (k) k.value = "Content-Type";
+    // if (v) v.value = type;
+
+    // if (node) node.id = id;
   });
 
   editor?.addEventListener("editor:update", (e) => {

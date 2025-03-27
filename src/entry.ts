@@ -80,18 +80,11 @@ app.post("/", async (req, res) => {
 
   type KV = Record<"key" | "value", string>;
 
-  let query = [] as Request["query"];
-
-  const queries = req.body.query as Array<KV> | undefined;
   const _headers = req.body.header as Array<KV> | undefined;
 
-  if (queries) {
-    query = queries
-      .filter(({ key }) => key.trim() !== "")
-      .map(({ key, value }) => [key, value]);
-  }
-
   let headers = {} as Record<string, string>;
+
+  console.log(req.body);
 
   if (_headers) {
     headers = Object.fromEntries(
@@ -101,7 +94,7 @@ app.post("/", async (req, res) => {
     );
   }
 
-  session.update({ url, query, body, method, headers });
+  session.update({ url, body, method, headers });
 
   const response = await session.execute();
 

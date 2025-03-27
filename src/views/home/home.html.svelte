@@ -19,8 +19,9 @@
   import { Method } from "../../types/method";
   import type { Session } from "../../core/session";
   import { ContentType as ContentTypes } from "../../types/content-type";
-  import KeyValue from "./key-value/key-value.entry.svelte";
+
   import UrlBar from "./islands/url-bar.svelte";
+  import Headers from "./islands/headers.svelte";
   import UrlParams from "./islands/url-params.svelte";
 
   export let session: Session;
@@ -46,10 +47,6 @@
     { label: "PATCH", value: Method.PATCH },
     { label: "DELETE", value: Method.DELETE },
   ];
-
-  const empty = [["", ""]] as const;
-
-  const header = request?.headers ? Object.entries(request.headers) : [];
 
   const url = request?.url ?? "";
 </script>
@@ -244,24 +241,9 @@
             id="req-headers-panel"
             aria-labelledby="req-headers-tab"
           >
-            <KeyValue
-              name="header"
-              id="req-headers-panel-fieldset"
-              data="{(header.length > 0 ? header : empty).map(
-                ([key, value]) => ({
-                  key,
-                  value,
-                  id:
-                    key == 'content-type' || key == 'Content-Type'
-                      ? 'header_content_type'
-                      : undefined,
-                })
-              )}"
-            >
-              <label slot="title" for="header_key" class="block">
-                Headers List
-              </label>
-            </KeyValue>
+            <div id="headers-container">
+              <Headers data="{request?.headers ?? {}}" />
+            </div>
           </div>
         </form>
 

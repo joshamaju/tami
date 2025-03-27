@@ -5,25 +5,16 @@
 
   import { onMount } from "svelte";
   import { emitter } from "./store";
+  import type { IRequest } from "../../../types/session";
 
-  type $$Props = HTMLAttributes<HTMLDivElement> & { url: string };
+  type $$Props = HTMLAttributes<HTMLDivElement> & { data: IRequest["headers"] };
 
-  const name = "query";
+  const name = "header";
   const empty = [["", ""]] as const;
 
-  function try_url(url: string) {
-    try {
-      return new URL(url);
-    } catch (error) {
-      return null;
-    }
-  }
+  export let data: $$Props["data"];
 
-  export let url: $$Props["url"];
-
-  $: url_ = try_url(url);
-
-  $: entries = url_ ? [...new URLSearchParams(url_.searchParams)] : [];
+  let headers = [...Object.entries(data)];
 
   function get_value(e: Event) {
     const node = e.target as HTMLInputElement;
@@ -31,26 +22,31 @@
   }
 
   onMount(() => {
-    emitter.on("url_change", (url_) => {
-      url = url_;
+    emitter.on("header_change", (e) => {
+      const entries = [...headers];
+
+      const i = entries.findIndex(([k]) => k == e.key);
+
+      if (entries[i]) {
+        const [k] = entries[i];
+        entries[i] = [k, e.value];
+      } else {
+        entries.push([e.key, e.value]);
+      }
+
+      headers = entries;
     });
   });
 </script>
 
 <div {...$$restProps}>
   <div class="flex items-center justify-between gap-2 p-2">
-    <label for="parameters" class="block"> Query Parameters </label>
+    <label for="header_key" class="block"> Headers List </label>
 
     <button
       type="button"
       on:click="{() => {
-        const url_ = new URL(url);
-        const search = new URLSearchParams(url_.searchParams);
-
-        search.append('', '');
-        url_.search = search.toString();
-
-        emitter.emit('url_change', url_.toString());
+        headers = [...headers, ['', '']];
       }}"
     >
       <PlusIcon size="{20}" class="pointer-events-none" />
@@ -59,7 +55,7 @@
 
   <table class="w-full border-t border-b text-sm">
     <tbody class="divide-y">
-      {#each entries.length <= 0 ? empty : entries as [key, value], i (i)}
+      {#each headers.length <= 0 ? empty : headers as [key, value], i (i)}
         <tr class="{['divide-x', $$props.class].filter(Boolean).join(' ')}">
           <td class="w-2/4 p-2">
             <input
@@ -69,10 +65,7 @@
               placeholder="Key"
               name="{name}[{i}][key]"
               on:input="{(e) => {
-                const url_ = new URL(url);
-                const search = new URLSearchParams(url_.searchParams);
-
-                const entries = [...search.entries()];
+                const entries = [...headers];
 
                 const value = get_value(e);
 
@@ -83,9 +76,7 @@
                   entries.push([value, '']);
                 }
 
-                url_.search = new URLSearchParams(entries).toString();
-
-                emitter.emit('url_change', url_.toString());
+                headers = entries;
               }}"
             />
           </td>
@@ -98,10 +89,7 @@
                 class="w-full flex-1"
                 name="{name}[{i}][value]"
                 on:input="{(e) => {
-                  const url_ = new URL(url);
-                  const search = new URLSearchParams(url_.searchParams);
-
-                  const entries = [...search.entries()];
+                  const entries = [...headers];
 
                   const value = get_value(e);
 
@@ -112,9 +100,7 @@
                     entries.push([key, value]);
                   }
 
-                  url_.search = new URLSearchParams(entries).toString();
-
-                  emitter.emit('url_change', url_.toString());
+                  headers = entries;
                 }}"
               />
 
@@ -122,16 +108,9 @@
                 type="button"
                 class="hover:bg-slate-200 rounded-md p-2"
                 on:click="{() => {
-                  const url_ = new URL(url);
-                  const search = new URLSearchParams(url_.searchParams);
-
-                  const entries = [...search.entries()];
-
+                  const entries = [...headers];
                   entries.splice(i, 1);
-
-                  url_.search = new URLSearchParams(entries).toString();
-
-                  emitter.emit('url_change', url_.toString());
+                  headers = entries;
                 }}"
               >
                 <TrashIcon size="{15}" class="touch-none pointer-events-none" />
