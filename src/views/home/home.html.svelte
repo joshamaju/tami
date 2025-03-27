@@ -63,8 +63,8 @@
 
     <link rel="stylesheet" href="./style.css" />
 
-    <script type="module" src="./hydrate.ts"></script>
     <script type="module" src="./script.ts"></script>
+    <script type="module" src="./islands/hydrate.ts"></script>
   </svelte:fragment>
 
   <div class="flex flex-col h-full">

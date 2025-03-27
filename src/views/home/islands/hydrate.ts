@@ -1,8 +1,8 @@
 import { decode } from "stack54/data";
-import type { IRequest } from "../../types/session";
-import UrlBar from "./islands/url-bar.svelte";
-import UrlParams from "./islands/url-params.svelte";
-import Headers from "./islands/headers.svelte";
+import type { IRequest } from "../../../types/session";
+import UrlBar from "./url-bar.svelte";
+import UrlParams from "./url-params.svelte";
+import Headers from "./headers.svelte";
 
 type Data = {
   request: Partial<IRequest>;

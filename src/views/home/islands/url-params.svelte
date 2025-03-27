@@ -3,13 +3,15 @@
   import PlusIcon from "lucide-svelte/icons/plus";
   import TrashIcon from "lucide-svelte/icons/trash-2";
 
-  import { onMount } from "svelte";
+  import { tick, onMount } from "svelte";
   import { emitter } from "./store";
 
   type $$Props = HTMLAttributes<HTMLDivElement> & { url: string };
 
   const name = "query";
   const empty = [["", ""]] as const;
+
+  let tbody: HTMLTableSectionElement | null = null;
 
   function try_url(url: string) {
     try {
@@ -51,6 +53,13 @@
         url_.search = search.toString();
 
         emitter.emit('url_change', url_.toString());
+
+        tick().then(() => {
+          const tr = tbody?.lastChild;
+          // @ts-expect-error
+          const input = tr?.querySelector('[data-slot="key"]');
+          input?.focus();
+        });
       }}"
     >
       <PlusIcon size="{20}" class="pointer-events-none" />
@@ -58,7 +67,7 @@
   </div>
 
   <table class="w-full border-t border-b text-sm">
-    <tbody class="divide-y">
+    <tbody class="divide-y" bind:this="{tbody}">
       {#each entries.length <= 0 ? empty : entries as [key, value], i (i)}
         <tr class="{['divide-x', $$props.class].filter(Boolean).join(' ')}">
           <td class="w-2/4 p-2">
@@ -66,6 +75,7 @@
               type="text"
               value="{key}"
               class="w-full"
+              data-slot="key"
               placeholder="Key"
               name="{name}[{i}][key]"
               on:input="{(e) => {

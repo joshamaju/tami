@@ -3,7 +3,7 @@
   import PlusIcon from "lucide-svelte/icons/plus";
   import TrashIcon from "lucide-svelte/icons/trash-2";
 
-  import { onMount } from "svelte";
+  import { tick, onMount } from "svelte";
   import { emitter } from "./store";
   import type { IRequest } from "../../../types/session";
 
@@ -13,6 +13,8 @@
   const empty = [["", ""]] as const;
 
   export let data: $$Props["data"];
+
+  let tbody: HTMLTableSectionElement | null = null;
 
   let headers = [...Object.entries(data)];
 
@@ -47,6 +49,13 @@
       type="button"
       on:click="{() => {
         headers = [...headers, ['', '']];
+
+        tick().then(() => {
+          const tr = tbody?.lastChild;
+          // @ts-expect-error
+          const input = tr?.querySelector('[data-slot="key"]');
+          input?.focus();
+        });
       }}"
     >
       <PlusIcon size="{20}" class="pointer-events-none" />
@@ -54,7 +63,7 @@
   </div>
 
   <table class="w-full border-t border-b text-sm">
-    <tbody class="divide-y">
+    <tbody class="divide-y" bind:this="{tbody}">
       {#each headers.length <= 0 ? empty : headers as [key, value], i (i)}
         <tr class="{['divide-x', $$props.class].filter(Boolean).join(' ')}">
           <td class="w-2/4 p-2">
@@ -62,6 +71,7 @@
               type="text"
               value="{key}"
               class="w-full"
+              data-slot="key"
               placeholder="Key"
               name="{name}[{i}][key]"
               on:input="{(e) => {
@@ -83,8 +93,8 @@
           <td class="w-2/4 p-2">
             <div class="flex gap-2 items-center">
               <input
-                type="text"
                 {value}
+                type="text"
                 placeholder="Value"
                 class="w-full flex-1"
                 name="{name}[{i}][value]"
