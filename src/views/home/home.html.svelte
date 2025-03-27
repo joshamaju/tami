@@ -20,6 +20,8 @@
   import type { Session } from "../../core/session";
   import { ContentType as ContentTypes } from "../../types/content-type";
   import KeyValue from "./key-value/key-value.entry.svelte";
+  import UrlBar from "./islands/url-bar.svelte";
+  import UrlParams from "./islands/url-params.svelte";
 
   export let session: Session;
   export let sessions: Array<Session>;
@@ -47,8 +49,9 @@
 
   const empty = [["", ""]] as const;
 
-  const query = request?.query;
   const header = request?.headers ? Object.entries(request.headers) : [];
+
+  const url = request?.url ?? "";
 </script>
 
 <Document>
@@ -57,10 +60,13 @@
       sessions="{sessions.filter((s) => s.slug !== current_session.slug)}"
     /> -->
 
+    {@html encode({ request }, { id: "HYDRATION_DATA" })}
+
     {@html encode({ content: request?.body }, { id: "PAGE_DATA" })}
 
     <link rel="stylesheet" href="./style.css" />
 
+    <script type="module" src="./hydrate.ts"></script>
     <script type="module" src="./script.ts"></script>
   </svelte:fragment>
 
@@ -97,16 +103,9 @@
             {/each}
           </select>
 
-          <input
-            id="url"
-            required
-            type="url"
-            name="url"
-            form="request"
-            placeholder="URL"
-            class="flex-1 p-2"
-            value="{request?.url}"
-          />
+          <div class="flex-1" id="url-container">
+            <UrlBar {url} />
+          </div>
         </div>
 
         <button
@@ -192,16 +191,9 @@
             id="parameters-panel"
             aria-labelledby="parameters-tab"
           >
-            <KeyValue
-              name="query"
-              data="{(query && query.length > 0 ? query : empty).map(
-                ([key, value]) => ({ key, value })
-              )}"
-            >
-              <label slot="title" for="parameters" class="block">
-                Query Parameters
-              </label>
-            </KeyValue>
+            <div id="query-container">
+              <UrlParams {url} />
+            </div>
           </div>
 
           <div id="body-panel" role="tabpanel" aria-labelledby="body-tab">
