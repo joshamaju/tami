@@ -61,8 +61,12 @@ app.get("/", async (req, res) => {
 
   const resp = session.response;
 
+  const p = req.query.preview;
+  const preview = typeof p == "string" && p == "1";
+
   return res.render("home/home", {
     session,
+    preview,
     sessions: manager.sessions,
     response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });

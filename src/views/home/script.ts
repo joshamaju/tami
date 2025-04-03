@@ -11,8 +11,38 @@ type Select = HTMLSelectElement;
 // @ts-expect-error
 window.htmx = htmx;
 
+window.addEventListener("message", (e) => {
+  if (e.data === "preview-close") {
+    const modal = document.getElementById("preview");
+    modal?.childNodes[0]?.remove();
+    // @ts-expect-error
+    modal?.close();
+  }
+});
+
 document.addEventListener("click", (e) => {
   const target = e.target as HTMLElement;
+
+  if (target.classList.contains("js-close-preview")) {
+    window.parent.postMessage("preview-close");
+  }
+
+  if (target.classList.contains("js-preview")) {
+    e.preventDefault();
+
+    const modal = document.getElementById("preview");
+
+    const portal = document.createElement("iframe");
+    portal.src = target.getAttribute("href")!;
+    portal.className = "w-full h-full";
+
+    modal?.appendChild(portal);
+
+    // @ts-expect-error
+    modal?.showModal();
+
+    return;
+  }
 
   if (target.classList.contains("js-toggle-side-nav")) {
     if (document.body.classList.contains("side-nav-collaped")) {
