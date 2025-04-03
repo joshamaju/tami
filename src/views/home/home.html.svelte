@@ -73,7 +73,7 @@
   </div>
 
   {#if !preview}
-    <dialog id="preview" class="w-[75%] h-[80%] rounded-lg border"></dialog>
+    <dialog id="preview" class="w-[75%] h-[80%] rounded-lg border border-gray-300"></dialog>
   {/if}
 
   <div class="loader">
