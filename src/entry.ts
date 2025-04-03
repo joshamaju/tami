@@ -15,7 +15,6 @@ import { SessionManager } from "./core/session-manager";
 import { DiskStorage } from "./core/storage/disk-storage";
 import { format } from "./core/utils";
 import { Method } from "./types/method";
-import type { Request } from "./types/session";
 import { resolve } from "./utils/view";
 
 const manager = new SessionManager(new DiskStorage());
@@ -83,8 +82,6 @@ app.post("/", async (req, res) => {
   const _headers = req.body.header as Array<KV> | undefined;
 
   let headers = {} as Record<string, string>;
-
-  console.log(req.body);
 
   if (_headers) {
     headers = Object.fromEntries(
