@@ -1,9 +1,9 @@
 import "htmx.org";
 import htmx from "htmx.org";
 
-import type { KeyValue } from "./key-value/key-value.component";
-import type { Editor } from "./editor/script";
 import { ContentType } from "../../types/content-type";
+import type { Editor } from "./editor/script";
+import { emitter } from "./islands/store";
 
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
@@ -11,8 +11,38 @@ type Select = HTMLSelectElement;
 // @ts-expect-error
 window.htmx = htmx;
 
+window.addEventListener("message", (e) => {
+  if (e.data === "preview-close") {
+    const modal = document.getElementById("preview");
+    modal?.childNodes[0]?.remove();
+    // @ts-expect-error
+    modal?.close();
+  }
+});
+
 document.addEventListener("click", (e) => {
   const target = e.target as HTMLElement;
+
+  if (target.classList.contains("js-close-preview")) {
+    window.parent.postMessage("preview-close");
+  }
+
+  if (target.classList.contains("js-preview")) {
+    e.preventDefault();
+
+    const modal = document.getElementById("preview");
+
+    const portal = document.createElement("iframe");
+    portal.src = target.getAttribute("href")!;
+    portal.className = "w-full h-full";
+
+    modal?.appendChild(portal);
+
+    // @ts-expect-error
+    modal?.showModal();
+
+    return;
+  }
 
   if (target.classList.contains("js-toggle-side-nav")) {
     if (document.body.classList.contains("side-nav-collaped")) {
@@ -44,13 +74,9 @@ document.addEventListener("click", (e) => {
 });
 
 htmx.onLoad(() => {
-  const editor = document.getElementById("body-editor") as Editor | null;
-
   const body = document.getElementById("body") as Input | null;
-
-  const content_type = document.querySelector(
-    'select[name="content-type"]'
-  ) as Select | null;
+  const editor = document.getElementById("body-editor") as Editor | null;
+  const content_type = document.getElementById("content-type") as Select | null;
 
   document.addEventListener("htmx:beforeSend", () => {
     document.body.setAttribute("data-submitting", "true");
@@ -63,10 +89,6 @@ htmx.onLoad(() => {
   document.addEventListener("htmx:sendAbort", () => {
     document.body.removeAttribute("data-submitting");
   });
-
-  const header_panel = document.getElementById(
-    "req-headers-panel-fieldset"
-  ) as KeyValue | null;
 
   content_type?.addEventListener("change", (e) => {
     const type = (e.target as Select).value;
@@ -82,22 +104,7 @@ htmx.onLoad(() => {
         break;
     }
 
-    const id = "header_content_type";
-
-    if (!header_panel) return;
-
-    const node = document.getElementById(id) ?? header_panel.new();
-
-    const key = node?.querySelector('[data-slot="key"]');
-    const value = node?.querySelector('[data-slot="value"]');
-
-    const k = key as HTMLInputElement | null;
-    const v = value as HTMLInputElement | null;
-
-    if (k) k.value = "Content-Type";
-    if (v) v.value = type;
-
-    if (node) node.id = id;
+    emitter.emit("header_change", { key: "Content-Type", value: type });
   });
 
   editor?.addEventListener("editor:update", (e) => {

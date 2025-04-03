@@ -109,6 +109,8 @@
               <EllipsisIcon size="{15}" />
             </button> -->
 
+                  <a href="/?session={session.slug}&preview=1" class="js-preview"> 👀</a>
+
                   <form method="post" action="/session/duplicate">
                     <button name="slug" value="{session.slug}">
                       <CopyIcon size="{15}" />

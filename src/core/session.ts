@@ -26,15 +26,11 @@ export class Session {
   }
 
   async execute() {
-    const { query, headers, method } = this.request!;
-
     if (!this.request?.url) {
       return E.left(new Error("Invalid url"));
     }
 
-    const url = new URL(this.request?.url);
-    const search = new URLSearchParams(query);
-    url.search = search.toString();
+    const { url, headers, method } = this.request;
 
     const body = method == Method.GET ? undefined : this.request.body;
 

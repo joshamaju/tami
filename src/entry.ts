@@ -15,7 +15,6 @@ import { SessionManager } from "./core/session-manager";
 import { DiskStorage } from "./core/storage/disk-storage";
 import { format } from "./core/utils";
 import { Method } from "./types/method";
-import type { Request } from "./types/session";
 import { resolve } from "./utils/view";
 
 const manager = new SessionManager(new DiskStorage());
@@ -62,8 +61,12 @@ app.get("/", async (req, res) => {
 
   const resp = session.response;
 
+  const p = req.query.preview;
+  const preview = typeof p == "string" && p == "1";
+
   return res.render("home/home", {
     session,
+    preview,
     sessions: manager.sessions,
     response: resp ? E.right({ ...resp, formatted: await format(resp) }) : null,
   });
@@ -80,16 +83,7 @@ app.post("/", async (req, res) => {
 
   type KV = Record<"key" | "value", string>;
 
-  let query = [] as Request["query"];
-
-  const queries = req.body.query as Array<KV> | undefined;
   const _headers = req.body.header as Array<KV> | undefined;
-
-  if (queries) {
-    query = queries
-      .filter(({ key }) => key.trim() !== "")
-      .map(({ key, value }) => [key, value]);
-  }
 
   let headers = {} as Record<string, string>;
 
@@ -101,7 +95,7 @@ app.post("/", async (req, res) => {
     );
   }
 
-  session.update({ url, query, body, method, headers });
+  session.update({ url, body, method, headers });
 
   const response = await session.execute();
 

@@ -1,10 +1,7 @@
-type KeyValue = [name: string, value: string];
-
 export type IRequest = {
   url: string;
   body: string;
   method: string;
-  query: Array<KeyValue>;
   headers: Record<string, string>;
 };
 
