@@ -56,3 +56,7 @@ body.side-nav-collaped .side-nav-toggle {
 [data-submitting] #result {
   opacity: 0.3;
 }
+
+.cm-editor {
+  height: 100%;
+}

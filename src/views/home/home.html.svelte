@@ -218,10 +218,11 @@
               </p>
             </div>
 
-            <div class="border min-h-40">
+            <div class="border h-40">
               <Editor
                 language="js"
                 id="body-editor"
+                class="block h-full"
                 code="{request?.body ?? ''}"
               />
             </div>
