@@ -1,5 +1,13 @@
 # tami-client
 
+## 0.1.0
+
+### Minor Changes
+
+- 9ca5549: Add syntax hilighting for different request body type
+- f07a8f8: Preview another session without leaving the current page/session
+- f07a8f8: Bi-directional sync of address bar with url query params table
+
 ## 0.0.5
 
 ### Patch Changes
