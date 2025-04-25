@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.2.1
+
+### Patch Changes
+
+- 2dbadbb: Fix fp-ts import
+
 ## 0.2.0
 
 ### Minor Changes
