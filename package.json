@@ -29,9 +29,10 @@
     "prepublish": "pnpm build",
     "release": "changeset publish",
     "start": "node ./bin/start.js",
-    "version": "changeset version",
     "test:integration": "playwright test",
-    "test": "npm run test:integration && npm run test:unit"
+    "write-version": "node ./scripts/version.js",
+    "test": "npm run test:integration && npm run test:unit",
+    "version": "changeset version && pnpm run write-version && git add --all"
   },
   "keywords": [
     "api",
@@ -61,6 +62,7 @@
     "open": "^10.1.0",
     "prettier": "^3.3.3",
     "pretty-bytes": "^6.1.1",
+    "semver": "^7.7.1",
     "space-slug": "^2.1.0",
     "stack54": "^0.8.0",
     "svelte": "^4.2.8"
@@ -78,6 +80,7 @@
     "@types/method-override": "^0.0.35",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.9.1",
+    "@types/semver": "^7.7.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",

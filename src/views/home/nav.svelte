@@ -109,7 +109,12 @@
               <EllipsisIcon size="{15}" />
             </button> -->
 
-                  <a href="/?session={session.slug}&preview=1" class="js-preview"> 👀</a>
+                  <a
+                    href="/?session={session.slug}&preview=1"
+                    class="js-preview"
+                  >
+                    👀</a
+                  >
 
                   <form method="post" action="/session/duplicate">
                     <button name="slug" value="{session.slug}">
@@ -135,7 +140,7 @@
     {/if}
   </div>
 
-  <div class="sticky bottom-0 bg-gray-100 p-4">
+  <div class="sticky bottom-0 bg-gray-100 p-4 space-y-3">
     <a
       href="mailto:joshsemail4work@gmail.com?subject={encodeURIComponent(
         'Tami Issue Report'

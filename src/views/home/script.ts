@@ -4,6 +4,8 @@ import htmx from "htmx.org";
 import { ContentType } from "../../types/content-type";
 import type { Editor } from "./editor/script";
 import { emitter } from "./islands/store";
+import Copy from "./copy.svelte";
+import type { SvelteComponent } from "svelte";
 
 type Input = HTMLInputElement;
 type Select = HTMLSelectElement;
@@ -25,6 +27,23 @@ document.addEventListener("click", (e) => {
 
   if (target.classList.contains("js-close-preview")) {
     window.parent.postMessage("preview-close");
+  }
+
+  if (target.classList.contains("js-version-update")) {
+    const modal = document.getElementById("update-modal");
+    const copy = document.querySelector(".js-copy-version");
+    const text = (copy as HTMLElement | null)?.dataset.text ?? "";
+
+    let component: SvelteComponent;
+
+    if (copy) {
+      component = new Copy({ target: copy, hydrate: true, props: { text } });
+    }
+
+    modal?.addEventListener("close", () => component?.$destroy());
+
+    // @ts-expect-error
+    modal?.showModal();
   }
 
   if (target.classList.contains("js-preview")) {

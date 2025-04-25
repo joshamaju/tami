@@ -16,6 +16,10 @@ import { DiskStorage } from "./core/storage/disk-storage";
 import { format } from "./core/utils";
 import { Method } from "./types/method";
 import { resolve } from "./utils/view";
+import { version_check } from "./core/version";
+import { VERSION } from "../version";
+
+const latest_version = version_check();
 
 const manager = new SessionManager(new DiskStorage());
 
@@ -46,6 +50,12 @@ app.use(compression());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// app.use(async (_, res, next) => {
+//   const latest = await latest_version;
+//   res.locals.version = { current: VERSION, latest };
+//   next();
+// });
 
 app.get("/", async (req, res) => {
   const slug = req.query.session;
@@ -140,6 +150,13 @@ app.post("/session/duplicate", async (req, res) => {
 app.post("/session/new", async (_, res) => {
   const session = await manager.newSession();
   return res.redirect(`/?session=${session.slug}`);
+});
+
+app.get("/version-check", async (req, res) => {
+  const goto = typeof req.query.go == "string" ? req.query.go : null;
+  const latest = await version_check();
+  app.locals.version = { current: "0.0.0", latest };
+  return res.redirect(goto ?? "/");
 });
 
 const errorHandler: ErrorRequestHandler = (error, _, res, next) => {
