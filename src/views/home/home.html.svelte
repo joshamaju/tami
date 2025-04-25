@@ -2,8 +2,8 @@
   import { encode } from "stack54/data";
   import { getLocals } from "stack54/locals";
 
-  import * as O from "fp-ts/Option";
-  import * as E from "fp-ts/Either";
+  import * as O from "fp-ts/lib/Option";
+  import * as E from "fp-ts/lib/Either";
   import { constNull, identity, pipe } from "fp-ts/function";
 
   import * as semver from "semver";
@@ -11,7 +11,7 @@
   import XIcon from "lucide-svelte/icons/x";
   import BellIcon from "lucide-svelte/icons/bell";
   import MenuIcon from "lucide-svelte/icons/menu";
-  import HistoryIcon from "lucide-svelte/icons/history";
+  // import HistoryIcon from "lucide-svelte/icons/history";
 
   import SideNav from "./nav.svelte";
   import Document from "../components/document.entry.svelte";
@@ -110,7 +110,7 @@
               </button>
             {/if}
 
-            <form method="get" action="/version-check">
+            <!-- <form method="get" action="/version-check">
               <button
                 name="go"
                 title="check for update"
@@ -118,7 +118,7 @@
               >
                 <HistoryIcon size="{20}" class="pointer-events-none" />
               </button>
-            </form>
+            </form> -->
           </div>
         {/if}
       </svelte:fragment>

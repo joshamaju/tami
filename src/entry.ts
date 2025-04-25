@@ -51,11 +51,11 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// app.use(async (_, res, next) => {
-//   const latest = await latest_version;
-//   res.locals.version = { current: VERSION, latest };
-//   next();
-// });
+app.use(async (_, res, next) => {
+  const latest = await latest_version;
+  res.locals.version = { current: VERSION, latest };
+  next();
+});
 
 app.get("/", async (req, res) => {
   const slug = req.query.session;
@@ -152,12 +152,12 @@ app.post("/session/new", async (_, res) => {
   return res.redirect(`/?session=${session.slug}`);
 });
 
-app.get("/version-check", async (req, res) => {
-  const goto = typeof req.query.go == "string" ? req.query.go : null;
-  const latest = await version_check();
-  app.locals.version = { current: "0.0.0", latest };
-  return res.redirect(goto ?? "/");
-});
+// app.get("/version-check", async (req, res) => {
+//   const goto = typeof req.query.go == "string" ? req.query.go : null;
+//   const latest = await version_check();
+//   app.locals.version = { current: "0.0.0", latest };
+//   return res.redirect(goto ?? "/");
+// });
 
 const errorHandler: ErrorRequestHandler = (error, _, res, next) => {
   console.log(error);

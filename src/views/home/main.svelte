@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as E from "fp-ts/Either";
+  import * as E from "fp-ts/lib/Either";
 
   import Editor from "./editor/editor.entry.svelte";
   import Response from "./response.svelte";
