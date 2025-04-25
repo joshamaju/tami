@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.2.0
+
+### Minor Changes
+
+- c70ceb4: Display new version notification
+
 ## 0.1.0
 
 ### Minor Changes
