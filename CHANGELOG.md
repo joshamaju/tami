@@ -1,5 +1,11 @@
 # tami-client
 
+## 0.2.2
+
+### Patch Changes
+
+- 989d0cc: Fix fp-ts module import
+
 ## 0.2.1
 
 ### Patch Changes
